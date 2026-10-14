@@ -12,10 +12,12 @@
   "ui": "ui.html",
   "networkAccess": {
     "allowedDomains": [
-      "none"
+      "https://api.figma.com",
+      "https://*.amazonaws.com"
     ],
     "devAllowedDomains": [
-      "http://localhost:43123"
+      "http://localhost:43123",
+      "http://localhost:3000"
     ]
   }
 }

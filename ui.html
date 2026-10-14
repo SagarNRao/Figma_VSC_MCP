@@ -1,22 +1,15 @@
 <h2>Rectangle Creator</h2>
-<p>Count: <input id="count" type="number" value="5"></p>
-<button id="create">Create</button>
-<button id="cancel">Cancel</button>
+<p>File URL: <input id="FileUrl" type="text" placeholder="Enter file URL (Open in browser)"></p>
 <button id="get-selection">Get Selection</button>
 <script>
 
-document.getElementById('create').onclick = () => {
-  const textbox = document.getElementById('count');
-  const count = parseInt(textbox.value, 10);
-  parent.postMessage({ pluginMessage: { type: 'create-shapes', count } }, '*')
-}
-
-document.getElementById('cancel').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
-}
-
 document.getElementById('get-selection').onclick = () => {
   parent.postMessage({ pluginMessage: { type: 'get-selection' } }, '*')
+}
+
+document.getElementById('FileUrl').onchange = (event) => {
+  const fileUrl = event.target.value;
+  parent.postMessage({ pluginMessage: { type: 'set-file-url', fileUrl } }, '*')
 }
 
 

@@ -4,7 +4,7 @@
   "description": "Your Figma Plugin",
   "main": "code.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.ui.json && esbuild ui.tsx --bundle --minify --outfile=ui.js --jsx=automatic --define:process.env.NODE_ENV=\\\"production\\\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "watch": "npm run build -- --watch",
@@ -16,8 +16,19 @@
     "@eslint/js": "^9.39.4",
     "@figma/eslint-plugin-figma-plugins": "*",
     "@figma/plugin-typings": "^1.141.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "esbuild": "^0.28.2",
     "eslint": "^9.39.4",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.1"
+  },
+  "dependencies": {
+    "axios": "^1.20.0",
+    "dotenv": "^18.0.7",
+    "express": "^5.3.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   }
 }

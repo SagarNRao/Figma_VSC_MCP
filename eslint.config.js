@@ -24,6 +24,7 @@ module.exports = tseslint.config(
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+      "no-unused-vars": "off"
     },
   },
   {
