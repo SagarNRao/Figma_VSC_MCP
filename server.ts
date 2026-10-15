@@ -1,11 +1,28 @@
 import express, { type Express, type Request, type Response } from 'express';
+import CORS from 'cors';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 const app: Express = express();
 const port = 3000;
 
-app.get('/getImage', async (req: Request, res: Response) => {
-    const getImageURL = req.query.url as string | undefined;
-    const FigmaKEY = process.env.FIGMA_TOKEN;
+app.use(CORS());
+app.use(express.json());
+
+app.post('/getImage', async (req: Request, res: Response) => {
+    let getImageURL = "https://api.figma.com/v1/images/"
+    const FigmaKEY = process.env.FIGMA_PERSONAL_ACCESS_TOKEN;
+
+    let nodeId = req.body.nodeId?.toString() || "";
+    let fileKey = req.body.fileKey?.toString() || "";
+
+    console.log("fileKey: ", fileKey);
+    console.log("nodeId: ", nodeId);
+    console.log("FigmaKEY: ", FigmaKEY);
+
+    getImageURL += fileKey + "?ids=" + nodeId + "&format=png&scale=1&use_absolute_bounds=true";
+
+    console.log("getImageURL: ", getImageURL);
 
     if (!getImageURL || !FigmaKEY) {
         res.status(400).json({ error: 'Missing image URL or Figma token' });
@@ -16,9 +33,8 @@ app.get('/getImage', async (req: Request, res: Response) => {
         const response = await fetch(getImageURL, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${FigmaKEY}`,
-                'X-Figma-Token': FigmaKEY
+                'Accept': 'application/json',
+                'X-Figma-Token': FigmaKEY as string
             }
         });
 
