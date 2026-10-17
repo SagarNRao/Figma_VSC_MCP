@@ -14,18 +14,18 @@ figma.showUI(__html__);
 // import * as dotenv from 'dotenv';
 // dotenv.config();
 
-let fileKey = "";
-let nodeId = "";
+// cant import anything into figma runtime, cant use usestate 😔😔😔😔
+let STATE_fileKey = "";
+let STATE_nodeId = "";
 
-const getImageURL = "https://api.figma.com/v1/images/" + fileKey + "?ids=" + nodeId + "&format=png&scale=1&use_absolute_bounds=true";
+let STATE_node;
+let STATE_imageURL;
+
+const getImageURL = "https://api.figma.com/v1/images/" + STATE_fileKey + "?ids=" + STATE_nodeId + "&format=png&scale=1&use_absolute_bounds=true";
 // const FigmaKEY = process.env.FIGMA_PERSONAL_ACCESS_TOKEN;
-const FigmaKEY = "figd_FrYJwKhefp1v7rbomix4anPX6AzNRwkrG-hAnYOt";
 const serverURL = "http://localhost:3000"
 
-
-
-
-fileKey = figma.fileKey || "";
+STATE_fileKey = figma.fileKey || "";
 
 const getImage = async () => {
   try {
@@ -38,8 +38,8 @@ const getImage = async () => {
       },
       body:
         JSON.stringify({
-          "fileKey": fileKey,
-          "nodeId": nodeId
+          "fileKey": STATE_fileKey,
+          "nodeId": STATE_nodeId
         })
     });
 
@@ -50,13 +50,36 @@ const getImage = async () => {
     const data = await response.json();
 
     // Figma returns the temporary S3 URL nested inside data.images[nodeId]
-    const imageUrl = data.images && data.images[nodeId];
+    const imageUrl = data.images && data.images[STATE_nodeId];
     console.log("IMAGE URL HERE: ", imageUrl);
+    STATE_imageURL = imageUrl;
 
   } catch (error) {
     console.error("Failed to retrieve image URL:", error);
   }
 };
+
+const createPayload = async () => {
+  // store node json and image url
+
+}
+const newGetImage = async (content: Uint8Array) => {
+  const response = await fetch(`${serverURL}/convert-to-image`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/octet-stream", // Sending raw binary
+    },
+    body: content, // Pass the Uint8Array directly
+  });
+
+  if (!response.ok) {
+    throw new Error(`Server returned status ${response.status}`);
+  }
+
+  const data = await response.json();
+  console.log("Image saved on server:", data.path);
+};
+
 
 figma.ui.onmessage = async (msg: {
   fileUrl: any; type: string, count: number
@@ -69,22 +92,36 @@ figma.ui.onmessage = async (msg: {
     const segments = msg.fileUrl.split('/');
     const designIndex = segments.findIndex((seg: string) => seg === 'design' || seg === 'file');
 
-    fileKey = designIndex !== -1 ? segments[designIndex + 1] : null;
-    console.log("FILE Key HERE: ", fileKey);
+    STATE_fileKey = designIndex !== -1 ? segments[designIndex + 1] : null;
+    console.log("FILE Key HERE: ", STATE_fileKey);
   }
 
   if (msg.type === 'get-selection') {
 
     for (const node of figma.currentPage.selection) {
       console.log("NODE ID HERE: ", node.id);
-      console.log("FILE Key HERE: ", fileKey);
+      console.log("FILE Key HERE: ", STATE_fileKey);
 
 
       // SET NODE ID
-      nodeId = node.id;
+      STATE_nodeId = node.id;
+      STATE_node = JSON.stringify(node);
+
+      console.log(STATE_node)
 
       console.log("CALLING getImage() ");
-      await getImage();
+      // await getImage();
+
+      const bytes = await node.exportAsync({
+        format: 'PNG',
+        constraint: { type: 'SCALE', value: 1 }, // or 0.5 if it's massive
+      });
+
+      console.log(bytes);
+      await newGetImage(bytes);
+      // send bytes object as uint8 array to server
+      // new Blob([content.buffer], { type: 'image/png' } 
+
 
     }
   }

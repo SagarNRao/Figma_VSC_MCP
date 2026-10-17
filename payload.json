@@ -1,0 +1,149 @@
+{
+  "fileKey": "hD7r2AU4i9oqI2OmFVUdP0",
+  "nodeId": "614:124",
+  "getImageURL": "https://api.figma.com/v1/images/hD7r2AU4i9oqI2OmFVUdP0?ids=614:124&format=png&scale=1&use_absolute_bounds=true",
+  "documentTree": {
+    "id": "614:124",
+    "name": "Frame 11943",
+    "type": "FRAME",
+    "scrollBehavior": "SCROLLS",
+    "children": [
+      {
+        "id": "614:125",
+        "name": "RESTORE TABS CTRL + SHIFT + T",
+        "type": "TEXT",
+        "scrollBehavior": "SCROLLS",
+        "blendMode": "PASS_THROUGH",
+        "fills": [
+          {
+            "blendMode": "NORMAL",
+            "type": "SOLID",
+            "color": {
+              "r": 1,
+              "g": 1,
+              "b": 1,
+              "a": 1
+            }
+          }
+        ],
+        "strokes": [],
+        "strokeWeight": 1,
+        "strokeAlign": "OUTSIDE",
+        "absoluteBoundingBox": {
+          "x": 16061,
+          "y": 23638,
+          "width": 3413,
+          "height": 968
+        },
+        "absoluteRenderBounds": {
+          "x": 16081.4208984375,
+          "y": 23730.11328125,
+          "width": 3378.2666015625,
+          "height": 783.005859375
+        },
+        "constraints": {
+          "vertical": "TOP",
+          "horizontal": "CENTER"
+        },
+        "characters": "RESTORE TABS\nCTRL + SHIFT + T",
+        "characterStyleOverrides": [],
+        "styleOverrideTable": {},
+        "lineTypes": [
+          "NONE",
+          "NONE"
+        ],
+        "lineIndentations": [
+          0,
+          0
+        ],
+        "style": {
+          "fontFamily": "Inter",
+          "fontPostScriptName": "Inter-Bold",
+          "fontStyle": "Bold",
+          "fontWeight": 700,
+          "textAutoResize": "WIDTH_AND_HEIGHT",
+          "fontSize": 400,
+          "textAlignHorizontal": "CENTER",
+          "textAlignVertical": "TOP",
+          "letterSpacing": 0,
+          "lineHeightPx": 484.0909118652344,
+          "lineHeightPercent": 100,
+          "lineHeightUnit": "INTRINSIC_%"
+        },
+        "layoutVersion": 5,
+        "effects": [],
+        "interactions": [],
+        "complexStrokeProperties": {
+          "strokeType": "BASIC"
+        }
+      }
+    ],
+    "blendMode": "PASS_THROUGH",
+    "clipsContent": true,
+    "background": [
+      {
+        "blendMode": "NORMAL",
+        "type": "SOLID",
+        "color": {
+          "r": 0,
+          "g": 0,
+          "b": 0,
+          "a": 1
+        }
+      }
+    ],
+    "fills": [
+      {
+        "blendMode": "NORMAL",
+        "type": "SOLID",
+        "color": {
+          "r": 0,
+          "g": 0,
+          "b": 0,
+          "a": 1
+        }
+      }
+    ],
+    "strokes": [],
+    "strokeWeight": 1,
+    "strokeAlign": "INSIDE",
+    "backgroundColor": {
+      "r": 0,
+      "g": 0,
+      "b": 0,
+      "a": 1
+    },
+    "absoluteBoundingBox": {
+      "x": 14896,
+      "y": 22525,
+      "width": 5742,
+      "height": 2787
+    },
+    "absoluteRenderBounds": {
+      "x": 14896,
+      "y": 22525,
+      "width": 5742,
+      "height": 2787
+    },
+    "constraints": {
+      "vertical": "TOP",
+      "horizontal": "LEFT"
+    },
+    "exportSettings": [
+      {
+        "suffix": "",
+        "format": "PNG",
+        "constraint": {
+          "type": "SCALE",
+          "value": 0.5
+        }
+      }
+    ],
+    "effects": [],
+    "interactions": [],
+    "complexStrokeProperties": {
+      "strokeType": "BASIC"
+    }
+  },
+  "timestamp": "2026-10-17T11:43:19.653Z"
+}
