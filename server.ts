@@ -82,31 +82,44 @@ app.use('/convert-to-image', express.raw({ type: 'application/octet-stream', lim
 // });
 
 
-app.post('/convert-to-image', async (req: Request, res: Response) => {
-    try {
-        // req.body is now a raw Node.js Buffer containing the image bytes
-        const content = req.body;
+// Route 1: Save the raw image bytes
+app.post('/convert-to-image', (req: Request, res: Response) => {
+    const content = req.body; // Raw binary buffer
+    const nodeId = req.headers['x-node-id'] as string;
+    const fileKey = req.headers['x-file-key'] as string;
 
-        if (!content || content.length === 0) {
-            res.status(400).json({ error: 'No image data received' });
-            return;
-        }
-
-        const cacheDir = path.resolve('./images');
-        if (!fs.existsSync(cacheDir)) {
-            fs.mkdirSync(cacheDir, { recursive: true });
-        }
-
-        const filePath = path.join(cacheDir, 'image.png');
-        
-        fs.writeFileSync(filePath, content);
-        console.log(`Successfully saved local export to ${filePath}`);
-
-        res.status(200).json({ success: true, path: filePath });
-    } catch (error) {
-        console.error("Failed to process image bytes:", error);
-        res.status(500).json({ error: 'Failed to save image bytes' });
+    if (!content || content.length === 0) {
+        res.status(400).json({ error: 'No image data received' });
+        return;
     }
+
+    const cacheDir = path.resolve('./images');
+    if (!fs.existsSync(cacheDir)) {
+        fs.mkdirSync(cacheDir, { recursive: true });
+    }
+
+    const imagePath = path.join(cacheDir, 'image.png');
+    fs.writeFileSync(imagePath, content);
+
+    res.status(200).json({ success: true, path: imagePath });
+});
+
+// Route 2: Save the payload.json referencing the image location
+app.post('/save-payload', (req: Request, res: Response) => {
+    const { fileKey, nodeId, documentTree } = req.body;
+
+    const payload = {
+        fileKey,
+        nodeId,
+        imagePath: './images/image.png',
+        documentTree,
+        timestamp: new Date().toISOString()
+    };
+
+    const payloadPath = path.resolve('./payload.json');
+    fs.writeFileSync(payloadPath, JSON.stringify(payload, null, 2));
+
+    res.status(200).json({ success: true, path: payloadPath });
 });
 
 

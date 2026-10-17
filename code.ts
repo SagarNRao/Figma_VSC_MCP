@@ -59,25 +59,79 @@ const getImage = async () => {
   }
 };
 
-const createPayload = async () => {
-  // store node json and image url
+// Recursively extracts all properties and getters from a Figma node object
+function serializeNodeDeep(node: any): any {
+  if (node === null || typeof node !== 'object') {
+    return node;
+  }
 
+  // Handle Arrays (like children, fills, effects, strokes)
+  if (Array.isArray(node)) {
+    return node.map(item => serializeNodeDeep(item));
+  }
+
+  const result: Record<string, any> = {};
+
+  // Walk up the prototype chain to grab all getter properties (name, type, fills, bounds, etc.)
+  let curr = node;
+  while (curr && curr !== Object.prototype) {
+    const descriptors = Object.getOwnPropertyDescriptors(curr);
+    for (const key of Object.keys(descriptors)) {
+      // Skip internal figma functions or parent references to avoid circular loops
+      if (key === 'parent' || key === 'masterComponent' || typeof node[key] === 'function') {
+        continue;
+      }
+
+      try {
+        const val = node[key];
+        // Avoid circular references and recursively serialize children or nested objects
+        if (val !== null && typeof val === 'object') {
+          result[key] = serializeNodeDeep(val);
+        } else {
+          result[key] = val;
+        }
+      } catch (e) {
+        // Some properties throw errors if they don't apply to a specific node type
+        // e.g., cornerRadius on a star or text-specific properties on a frame
+      }
+    }
+    curr = Object.getPrototypeOf(curr);
+  }
+
+  return result;
 }
-const newGetImage = async (content: Uint8Array) => {
-  const response = await fetch(`${serverURL}/convert-to-image`, {
+
+
+const newGetImage = async (content: Uint8Array, nodeId: string, fileKey: string, nodeJson: string) => {
+  const imageRes = await fetch(`${serverURL}/convert-to-image`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/octet-stream", // Sending raw binary
+      "Content-Type": "application/octet-stream",
+      "X-Node-Id": nodeId,
+      "X-File-Key": fileKey,
     },
     body: content, // Pass the Uint8Array directly
   });
 
-  if (!response.ok) {
-    throw new Error(`Server returned status ${response.status}`);
+  if (!imageRes.ok) {
+    throw new Error(`Server returned status ${imageRes.status}`);
   }
 
-  const data = await response.json();
-  console.log("Image saved on server:", data.path);
+  const payloadRes = await fetch(`${serverURL}/save-payload`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      nodeId,
+      fileKey,
+      documentTree: JSON.parse(nodeJson), // Parse back to object so Express receives valid JSON
+    }),
+  });
+
+  if (!payloadRes.ok) throw new Error(`Failed to save payload: ${payloadRes.status}`);
+
+  console.log("Successfully saved both image and payload.json locally!");
 };
 
 
@@ -86,7 +140,6 @@ figma.ui.onmessage = async (msg: {
 }) => {
   // One way of distinguishing between different types of messages sent from
   // your HTML page is to use an object with a "type" property like this.
-
 
   if (msg.type === 'set-file-url') {
     const segments = msg.fileUrl.split('/');
@@ -102,27 +155,20 @@ figma.ui.onmessage = async (msg: {
       console.log("NODE ID HERE: ", node.id);
       console.log("FILE Key HERE: ", STATE_fileKey);
 
+      const fullNodeData = serializeNodeDeep(node);
 
       // SET NODE ID
       STATE_nodeId = node.id;
-      STATE_node = JSON.stringify(node);
+      STATE_node = JSON.stringify(fullNodeData, null, 2);
 
-      console.log(STATE_node)
-
-      console.log("CALLING getImage() ");
-      // await getImage();
+      console.log("Full node data extracted locally:", STATE_node);
 
       const bytes = await node.exportAsync({
         format: 'PNG',
         constraint: { type: 'SCALE', value: 1 }, // or 0.5 if it's massive
       });
 
-      console.log(bytes);
-      await newGetImage(bytes);
-      // send bytes object as uint8 array to server
-      // new Blob([content.buffer], { type: 'image/png' } 
-
-
+      await newGetImage(bytes, STATE_nodeId, STATE_fileKey, STATE_node);
     }
   }
 
