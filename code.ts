@@ -117,19 +117,35 @@ const newGetImage = async (content: Uint8Array, nodeId: string, fileKey: string,
     throw new Error(`Server returned status ${imageRes.status}`);
   }
 
-  const payloadRes = await fetch(`${serverURL}/save-payload`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      nodeId,
-      fileKey,
-      documentTree: JSON.parse(nodeJson), // Parse back to object so Express receives valid JSON
-    }),
-  });
+  const payloadJson = JSON.stringify({
+    fileKey,
+    nodeId,
+    imagePath: './resources/image.png',
+    documentTree: JSON.parse(nodeJson),
+    timestamp: new Date().toISOString()
+  }, null, 2);
+  const chunkSize = 8 * 1024;
+  const totalChunks = Math.ceil(payloadJson.length / chunkSize);
+  const uploadId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-  if (!payloadRes.ok) throw new Error(`Failed to save payload: ${payloadRes.status}`);
+  for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+    const response = await fetch(`${serverURL}/save-payload-chunk`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        uploadId,
+        chunkIndex,
+        totalChunks,
+        chunk: payloadJson.slice(chunkIndex * chunkSize, (chunkIndex + 1) * chunkSize),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to save payload chunk ${chunkIndex + 1}/${totalChunks}: ${response.status}`);
+    }
+  }
 
   console.log("Successfully saved both image and payload.json locally!");
 };
@@ -160,8 +176,6 @@ figma.ui.onmessage = async (msg: {
       // SET NODE ID
       STATE_nodeId = node.id;
       STATE_node = JSON.stringify(fullNodeData, null, 2);
-
-      console.log("Full node data extracted locally:", STATE_node);
 
       const bytes = await node.exportAsync({
         format: 'PNG',

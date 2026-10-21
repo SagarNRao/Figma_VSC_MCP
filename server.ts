@@ -10,6 +10,7 @@ dotenv.config();
 
 const app: Express = express();
 const port = 3000;
+const payloadUploads = new Map<string, { totalChunks: number; nextChunkIndex: number; tempPath: string }>();
 
 app.use(CORS());
 app.use(express.json());
@@ -103,6 +104,60 @@ app.post('/convert-to-image', (req: Request, res: Response) => {
     fs.writeFileSync(imagePath, content);
 
     res.status(200).json({ success: true, path: imagePath });
+});
+
+app.post('/save-payload-chunk', (req: Request, res: Response) => {
+    const { uploadId, chunkIndex, totalChunks, chunk } = req.body;
+
+    if (
+        typeof uploadId !== 'string' ||
+        !/^[a-zA-Z0-9_-]{1,80}$/.test(uploadId) ||
+        !Number.isInteger(chunkIndex) ||
+        !Number.isInteger(totalChunks) ||
+        totalChunks < 1 ||
+        chunkIndex < 0 ||
+        chunkIndex >= totalChunks ||
+        typeof chunk !== 'string'
+    ) {
+        res.status(400).json({ error: 'Invalid payload chunk' });
+        return;
+    }
+
+    const cacheDir = path.join(__dirname, 'MCP', 'resources');
+    if (!fs.existsSync(cacheDir)) {
+        fs.mkdirSync(cacheDir, { recursive: true });
+    }
+
+    let upload = payloadUploads.get(uploadId);
+    if (chunkIndex === 0) {
+        if (upload) {
+            res.status(409).json({ error: 'Payload upload already exists' });
+            return;
+        }
+
+        const tempPath = path.join(cacheDir, `${uploadId}.payload.tmp`);
+        fs.writeFileSync(tempPath, chunk, { encoding: 'utf8', flag: 'wx' });
+        upload = { totalChunks, nextChunkIndex: 1, tempPath };
+        payloadUploads.set(uploadId, upload);
+    } else {
+        if (!upload || upload.totalChunks !== totalChunks || upload.nextChunkIndex !== chunkIndex) {
+            res.status(409).json({ error: 'Unexpected payload chunk order' });
+            return;
+        }
+
+        fs.appendFileSync(upload.tempPath, chunk, 'utf8');
+        upload.nextChunkIndex++;
+    }
+
+    if (chunkIndex === totalChunks - 1) {
+        const payloadPath = path.join(cacheDir, 'payload.json');
+        fs.renameSync(upload.tempPath, payloadPath);
+        payloadUploads.delete(uploadId);
+        res.status(200).json({ success: true, path: payloadPath });
+        return;
+    }
+
+    res.status(200).json({ success: true, received: chunkIndex + 1, totalChunks });
 });
 
 // Route 2: Save the payload.json referencing the image location
