@@ -93,7 +93,7 @@ app.post('/convert-to-image', (req: Request, res: Response) => {
         return;
     }
 
-    const cacheDir = path.resolve('./images');
+    const cacheDir = path.resolve('.MCP/images');
     if (!fs.existsSync(cacheDir)) {
         fs.mkdirSync(cacheDir, { recursive: true });
     }
@@ -111,12 +111,12 @@ app.post('/save-payload', (req: Request, res: Response) => {
     const payload = {
         fileKey,
         nodeId,
-        imagePath: './images/image.png',
+        imagePath: './MCP/images/image.png',
         documentTree,
         timestamp: new Date().toISOString()
     };
 
-    const payloadPath = path.resolve('./payload.json');
+    const payloadPath = path.resolve('./MCP/resources/payload.json');
     fs.writeFileSync(payloadPath, JSON.stringify(payload, null, 2));
 
     res.status(200).json({ success: true, path: payloadPath });
