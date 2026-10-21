@@ -13,9 +13,9 @@ const port = 3000;
 
 app.use(CORS());
 app.use(express.json());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
-app.use('/convert-to-image', express.raw({ type: 'application/octet-stream', limit: '10mb' }));
+app.use(express.json({ limit: '500mb' }));
+app.use(express.urlencoded({ limit: '500mb', extended: true }));
+app.use('/convert-to-image', express.raw({ type: 'application/octet-stream', limit: '500mb' }));
 
 
 // app.post('/getImage', async (req: Request, res: Response) => {
@@ -84,7 +84,7 @@ app.use('/convert-to-image', express.raw({ type: 'application/octet-stream', lim
 
 // Route 1: Save the raw image bytes
 app.post('/convert-to-image', (req: Request, res: Response) => {
-    const content = req.body; // Raw binary buffer
+    const content = req.body; 
     const nodeId = req.headers['x-node-id'] as string;
     const fileKey = req.headers['x-file-key'] as string;
 
@@ -93,12 +93,13 @@ app.post('/convert-to-image', (req: Request, res: Response) => {
         return;
     }
 
-    const cacheDir = path.resolve('.MCP/images');
+    // Target the MCP/resources directory directly
+    const cacheDir = path.join(__dirname, 'MCP', 'resources');
     if (!fs.existsSync(cacheDir)) {
         fs.mkdirSync(cacheDir, { recursive: true });
     }
 
-    const imagePath = path.join(cacheDir, 'image.png');
+    const imagePath = path.join(cacheDir, './image.png');
     fs.writeFileSync(imagePath, content);
 
     res.status(200).json({ success: true, path: imagePath });
@@ -111,12 +112,12 @@ app.post('/save-payload', (req: Request, res: Response) => {
     const payload = {
         fileKey,
         nodeId,
-        imagePath: './MCP/images/image.png',
+        imagePath: './resources/image.png',
         documentTree,
         timestamp: new Date().toISOString()
     };
 
-    const payloadPath = path.resolve('./MCP/resources/payload.json');
+    const payloadPath = path.join(__dirname, 'MCP', 'resources', 'payload.json');
     fs.writeFileSync(payloadPath, JSON.stringify(payload, null, 2));
 
     res.status(200).json({ success: true, path: payloadPath });
