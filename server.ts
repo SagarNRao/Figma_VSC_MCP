@@ -3,7 +3,6 @@ import CORS from 'cors';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';
-import { REPLCommand } from 'repl';
 
 
 dotenv.config();
@@ -13,74 +12,9 @@ const port = 3000;
 const payloadUploads = new Map<string, { totalChunks: number; nextChunkIndex: number; tempPath: string }>();
 
 app.use(CORS());
-app.use(express.json());
 app.use(express.json({ limit: '500mb' }));
 app.use(express.urlencoded({ limit: '500mb', extended: true }));
 app.use('/convert-to-image', express.raw({ type: 'application/octet-stream', limit: '500mb' }));
-
-
-// app.post('/getImage', async (req: Request, res: Response) => {
-//     let getImageURL = "https://api.figma.com/v1/images/"
-//     const FigmaKEY = process.env.FIGMA_PERSONAL_ACCESS_TOKEN;
-
-//     let nodeId = req.body.nodeId?.toString() || "";
-//     let fileKey = req.body.fileKey?.toString() || "";
-//     let imageURL;
-
-//     console.log("fileKey: ", fileKey);
-//     console.log("nodeId: ", nodeId);
-
-//     getImageURL += fileKey + "?ids=" + nodeId + "&format=png&scale=1&use_absolute_bounds=true";
-
-//     console.log("getImageURL: ", getImageURL);
-
-//     if (!getImageURL || !FigmaKEY) {
-//         res.status(400).json({ error: 'Missing image URL or Figma token' });
-//         return;
-//     }
-
-//     try {
-//         const response = await fetch(getImageURL, {
-//             method: 'GET',
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'X-Figma-Token': FigmaKEY as string
-//             }
-//         });
-
-//         const data = await response.json();
-//         const imageUrl = data.images && data.images[nodeId];
-//         console.log("IMAGE URL HERE: ", imageUrl); // getting rate limited rn
-
-//         res.status(response.status).json(data);
-//     } catch (error) {
-//         res.status(500).json({ error: 'Failed to fetch image' });
-//     }
-
-//     const nodeEndpoint = `https://api.figma.com/v1/files/${fileKey}/nodes?ids=${nodeId}`;
-//     const nodeResponse = await fetch(nodeEndpoint, {
-//         method: 'GET',
-//         headers: {
-//             'Accept': 'application/json',
-//             'X-Figma-Token': FigmaKEY as string
-//         }
-//     });
-//     const nodeData = await nodeResponse.json();
-//     const documentTree = nodeData.nodes && nodeData.nodes[nodeId]?.document;
-
-//     const payload = {
-//         fileKey,
-//         nodeId,
-//         getImageURL,
-//         documentTree,
-//         timestamp: new Date().toISOString()
-//     };
-
-//     fs.writeFileSync('./payload.json', JSON.stringify(payload, null, 2));
-
-//     newGetImage();
-
-// });
 
 
 // Route 1: Save the raw image bytes

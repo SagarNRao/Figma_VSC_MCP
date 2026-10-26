@@ -18,46 +18,12 @@ figma.showUI(__html__);
 let STATE_fileKey = "";
 let STATE_nodeId = "";
 
-let STATE_node;
-let STATE_imageURL;
+let STATE_node = "";
 
-const getImageURL = "https://api.figma.com/v1/images/" + STATE_fileKey + "?ids=" + STATE_nodeId + "&format=png&scale=1&use_absolute_bounds=true";
 // const FigmaKEY = process.env.FIGMA_PERSONAL_ACCESS_TOKEN;
 const serverURL = "http://localhost:3000"
 
 STATE_fileKey = figma.fileKey || "";
-
-const getImage = async () => {
-  try {
-    const endpoint = `${serverURL}/getImage?url=${encodeURIComponent(getImageURL)}`;
-
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body:
-        JSON.stringify({
-          "fileKey": STATE_fileKey,
-          "nodeId": STATE_nodeId
-        })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Server returned status ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    // Figma returns the temporary S3 URL nested inside data.images[nodeId]
-    const imageUrl = data.images && data.images[STATE_nodeId];
-    console.log("IMAGE URL HERE: ", imageUrl);
-    STATE_imageURL = imageUrl;
-
-  } catch (error) {
-    console.error("Failed to retrieve image URL:", error);
-  }
-};
 
 // Recursively extracts all properties and getters from a Figma node object
 function serializeNodeDeep(node: any): any {
@@ -161,13 +127,18 @@ figma.ui.onmessage = async (msg: {
     const segments = msg.fileUrl.split('/');
     const designIndex = segments.findIndex((seg: string) => seg === 'design' || seg === 'file');
 
-    STATE_fileKey = designIndex !== -1 ? segments[designIndex + 1] : null;
+    STATE_fileKey = designIndex !== -1 ? (segments[designIndex + 1] || "") : "";
     console.log("FILE Key HERE: ", STATE_fileKey);
   }
 
   if (msg.type === 'get-selection') {
 
-    for (const node of figma.currentPage.selection) {
+    // Only the first selected node is exported: every iteration overwrites
+    // image.png / payload.json, so looping over more would just clobber them.
+    const node = figma.currentPage.selection[0];
+    if (!node) {
+      figma.notify("Select a frame first");
+    } else {
       console.log("NODE ID HERE: ", node.id);
       console.log("FILE Key HERE: ", STATE_fileKey);
 
@@ -183,6 +154,7 @@ figma.ui.onmessage = async (msg: {
       });
 
       await newGetImage(bytes, STATE_nodeId, STATE_fileKey, STATE_node);
+      figma.notify("Exported image + payload");
     }
   }
 
