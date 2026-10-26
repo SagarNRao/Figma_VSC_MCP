@@ -16,8 +16,8 @@ ROOT = Path(__file__).resolve().parents[2]
 PAYLOAD_PATH = ROOT / "MCP" / "resources" / "payload.json"
 IMAGE_PATH = ROOT / "MCP" / "resources" / "image.png"
 
-# OUTPUT_PATH = ROOT / "latest generated-app" / "app" / "page.tsx"
-OUTPUT_PATH = "C:/Projects/Web/Figma_MCP/Figma_vsc_MCP/generated-app/app/page.tsx"
+OUTPUT_PATH = ROOT / "generated-app" / "app" / "page.tsx"
+# OUTPUT_PATH = "C:/Projects/Web/Figma_MCP/Figma_vsc_MCP/generated-app/app/page.tsx"
 
 
 
