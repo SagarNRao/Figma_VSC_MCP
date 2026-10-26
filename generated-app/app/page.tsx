@@ -1,139 +1,151 @@
 import React from "react";
 
-const DotsBackground = () => {
-  const rows = 20;
-  const cols = 60;
-  const dots = Array.from({ length: rows * cols }, (_, i) => {
-    const row = Math.floor(i / cols);
-    const col = i % cols;
-    const isOrange = Math.random() > 0.7;
-    const isDark = Math.random() > 0.5;
-    return { row, col, isOrange, isDark };
-  });
-
+export default function Home() {
   return (
-    <div className="absolute inset-0 overflow-hidden">
-      <div className="absolute inset-0 bg-[#0a0a0a]">
-        {dots.map((dot, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 rounded-full"
-            style={{
-              left: `${(dot.col / cols) * 100}%`,
-              top: `${(dot.row / rows) * 100}%`,
-              backgroundColor: dot.isOrange
-                ? "#ff6600"
-                : dot.isDark
-                ? "#333333"
-                : "#1a1a1a",
-              opacity: dot.isOrange ? 0.8 : 0.4,
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const HeroSection = () => {
-  return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-white overflow-hidden">
-      <DotsBackground />
-
+    <div className="min-h-screen bg-black text-white">
       {/* Navigation */}
-      <nav className="relative z-10 flex items-center justify-between px-8 py-4">
+      <nav className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#ff6600] rounded flex items-center justify-center">
-              <span className="text-white text-sm font-bold">G</span>
+            <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
+              <svg
+                className="w-4 h-4 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                />
+              </svg>
             </div>
             <span className="text-lg font-semibold">Grafkit</span>
           </div>
-          <div className="flex items-center gap-6">
-            <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors">
+          <div className="hidden md:flex items-center gap-6">
+            <a href="#" className="text-sm text-gray-300 hover:text-white">
               Product
             </a>
-            <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors">
+            <a href="#" className="text-sm text-gray-300 hover:text-white">
               Changelog
             </a>
-            <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors">
+            <a href="#" className="text-sm text-gray-300 hover:text-white">
               Docs
             </a>
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors">
+          <a href="#" className="text-sm text-gray-300 hover:text-white">
             Login
           </a>
           <a
             href="#"
-            className="bg-[#ff6600] text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-[#e65c00] transition-colors"
+            className="bg-orange-600 hover:bg-orange-700 text-white text-sm px-4 py-2 rounded-full transition-colors"
           >
             Sign Up
           </a>
         </div>
       </nav>
 
-      {/* Hero Content */}
-      <div className="relative z-10 px-8 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          {/* Left Side */}
-          <div>
-            <h1 className="text-5xl lg:text-6xl font-bold leading-tight mb-6">
-              Some really
-              <br />
-              cool graph stuff
-            </h1>
-            <p className="text-gray-400 text-lg mb-8">
-              Lorem ipsum dolor sit amet consectetur
-            </p>
-            <div className="flex items-center gap-4">
-              <a
-                href="#"
-                className="bg-[#ff6600] text-white px-6 py-3 rounded-full font-medium hover:bg-[#e65c00] transition-colors"
-              >
-                Get started
-              </a>
-              <a
-                href="#"
-                className="border border-gray-600 text-white px-6 py-3 rounded-full font-medium hover:border-gray-400 transition-colors"
-              >
-                Learn More
-              </a>
+      {/* Hero Section */}
+      <section className="relative px-6 py-16 md:py-24">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Left Column */}
+            <div>
+              <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6">
+                Some really cool graph stuff
+              </h1>
+              <p className="text-gray-400 text-lg mb-8">
+                Lorem ipsum dolor sit amet consectetur
+              </p>
+              <div className="flex items-center gap-4">
+                <a
+                  href="#"
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-full transition-colors"
+                >
+                  Get started
+                </a>
+                <a
+                  href="#"
+                  className="border border-white hover:bg-white hover:text-black text-white px-6 py-3 rounded-full transition-colors"
+                >
+                  Learn More
+                </a>
+              </div>
             </div>
-          </div>
 
-          {/* Right Side - Feature List */}
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 bg-white rounded-full flex-shrink-0"></div>
-              <span className="text-gray-300">Lorem ipsum dolor sit amet consectetur</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 bg-white rounded-full flex-shrink-0"></div>
-              <span className="text-gray-300">Lorem ipsum dolor sit amet consectetur</span>
+            {/* Right Column - Feature List */}
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 bg-white rounded-full flex-shrink-0"></div>
+                <span className="text-white">
+                  Lorem ipsum dolor sit amet consectetur
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 bg-white rounded-full flex-shrink-0"></div>
+                <span className="text-white">
+                  Lorem ipsum dolor sit amet consectetur
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Graph Visualization Section */}
+      <section className="relative h-96 md:h-[500px] overflow-hidden">
+        <div className="absolute inset-0">
+          {/* Grid pattern background */}
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, #444 1px, transparent 1px)",
+              backgroundSize: "20px 20px",
+            }}
+          />
+
+          {/* Orange dots visualization */}
+          <div className="absolute inset-0 flex items-end justify-center">
+            <div className="w-full h-full relative">
+              {/* Generate random orange dots */}
+              {Array.from({ length: 200 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-2 h-2 bg-orange-600 rounded-full"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    bottom: `${Math.random() * 80}%`,
+                    opacity: Math.random() * 0.8 + 0.2,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Bottom Text Section */}
-      <div className="relative z-10 px-8 pb-16">
-        <div className="text-center">
-          <h2 className="text-3xl lg:text-4xl font-semibold leading-relaxed">
-            <span className="text-white">Ever wanted to do really cool graph stuff</span>
+      <section className="px-6 py-16 md:py-24">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-5xl font-bold leading-tight mb-4">
+            <span className="text-white">
+              Ever wanted to do really cool graph stuff
+            </span>
             <br />
-            <span className="text-white">because i did</span>{" "}
-            <span className="text-gray-500">and thats why Grafkit exists</span>
+            <span className="text-white">because i did</span>
+            <span className="text-gray-500"> and thats why Grafkit exists</span>
             <br />
-            <span className="text-gray-500">so you can do cool graph stuff</span>
+            <span className="text-gray-500">
+              so you can do cool graph stuff
+            </span>
           </h2>
         </div>
-      </div>
+      </section>
     </div>
   );
-};
-
-export default function Home() {
-  return <HeroSection />;
 }

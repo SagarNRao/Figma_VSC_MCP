@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 ORIGINAL_IMAGE = ROOT / "MCP" / "resources" / "image.png"
 GENERATED_IMAGE = ROOT / "MCP" / "resources" / "generated.png"
 
-PAGE_PATH = ROOT / "latest generated-app" / "app" / "page.tsx"
+PAGE_PATH = ROOT / "generated-app" / "app" / "page.tsx"
 
 load_dotenv(ROOT / ".env")
 
@@ -98,7 +98,7 @@ REQUIREMENTS:
             }
         ],
         temperature=0.2,
-        max_completion_tokens=8000
+        max_completion_tokens=900
     )
 
     code = response.choices[0].message.content
