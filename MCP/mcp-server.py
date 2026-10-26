@@ -32,8 +32,11 @@ def get_payload() -> str:
 @mcp.resource("resource://image")
 def get_image() -> bytes:
     """Expose the high-fidelity PNG render of the Figma component for visual analysis."""
-    with open("./images/image.")
-        
+    with open("./images/image.png", "rb") as f:
+        return f.read()        
+    
+@mcp.tool():
+    """uses shadcn components to write react frontend code"""
 
 if __name__ == "__main__":
     mcp.run(transport="http", port=8000)
